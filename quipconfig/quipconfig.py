@@ -1,6 +1,7 @@
 import argparse
 import yaml
 import pathlib, os
+from .quipConfigFile import QuipConfigFile
 
 def main():
     parser = argparse.ArgumentParser()
@@ -8,11 +9,17 @@ def main():
     args = parser.parse_args()
     role = args.role
 
+    files = []
+    packages = []
+
     print(f"Configuring server of type: {role}")
 
+    # Read and Parse the Configuration
     path = pathlib.Path(pathlib.Path(__file__).resolve().parent / f"configs\{role}_config.yml")
     with open(path, 'r') as config_file:
         data = config_file.read()
         content = yaml.safe_load(data)
-        print(content)
-        
+        files = content.get("files")
+
+    print(files)
+    

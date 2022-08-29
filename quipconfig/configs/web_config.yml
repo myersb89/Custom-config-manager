@@ -1,19 +1,9 @@
-packages:
-  - nginx
 files:
-  - path: "config.txt"
-    content: 
-      - |
-        This is a config file
-    metadata:
-      - owner: "root"
-      - group: "root"
-      - mode: "test"
-  - path: "nginx.conf"
-    content: 
-      - |
-        This is a config file
-    metadata:
-      - owner: "root"
-      - group: "root"
-      - mode: "test"
+-
+  !File
+  content: this is a config
+  path: config.txt
+-
+  !File
+  content: this is a config
+  path: nginx.conf
