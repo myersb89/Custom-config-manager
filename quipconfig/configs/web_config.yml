@@ -1,8 +1,9 @@
-files:
+packages:
 -
-  !File
-  content: this is a config
-  path: config.txt
+  !Package
+  name: nginx
+  version: 1.22
+files:
 -
   !File
   content: this is a config
