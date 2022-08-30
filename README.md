@@ -11,3 +11,7 @@ TODOS:
     - should it actually connect and download config, or run a local copy?
 - Document how to create a config
     - bonus, add a wizard?
+
+# Test Environment
+docker run -d -p 2222:22 --name test-web-server test-ssh:latest
+ssh root@127.0.0.1 -p 2222
