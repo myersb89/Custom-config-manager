@@ -13,5 +13,6 @@ TODOS:
     - bonus, add a wizard?
 
 # Test Environment
-docker run -d -p 2222:22 --name test-web-server test-ssh:latest
+docker build -t test-ssh .
+docker run -d -p 2222:22 --name test-web-server1 test-ssh:latest
 ssh root@127.0.0.1 -p 2222
