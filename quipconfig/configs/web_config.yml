@@ -8,3 +8,11 @@ files:
   !File
   content: this is a config
   path: nginx.conf
+-
+  !File
+  content:
+    |
+    <?php
+    header("Content-Type: text/plain");
+    echo "Hello, world!\n";
+  path: app.php
