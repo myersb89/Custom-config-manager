@@ -1,16 +1,10 @@
 # Custom-config-manger
 TODOS:
-- Add testing framework
-- Errors and edge cases
-- Decide on push or pull architecture
-    push:
-    - look into remote code execution with python
-    - threading/parallelization?
-    pull:
-    - how to get it installed
-    - should it actually connect and download config, or run a local copy?
 - Document how to create a config
     - bonus, add a wizard?
+- Create exception for remote execution errors
+- Tests for file class
+- Finish file class functionality
 
 # Test Environment
 docker build -t test-ssh .

@@ -6,8 +6,13 @@ packages:
 files:
 -
   !File
-  content: this is a config
+  content: 
+    |
+    this is a config
   path: nginx.conf
+  owner: root
+  group: root
+  permissions: -rw-r--r--
 -
   !File
   content:
@@ -16,3 +21,6 @@ files:
     header("Content-Type: text/plain");
     echo "Hello, world!\n";
   path: app.php
+  owner: root
+  group: root
+  permissions: -rw-r--r--
