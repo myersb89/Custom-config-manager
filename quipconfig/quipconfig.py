@@ -16,6 +16,7 @@ def main():
 
     if args.verbose:
         logging.basicConfig(format='%(asctime)s %(message)s', level=logging.DEBUG)
+        logging.getLogger('paramiko').setLevel(logging.CRITICAL+1)
     else:
         logging.basicConfig(format='%(asctime)s %(message)s')
 
