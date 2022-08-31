@@ -20,7 +20,7 @@ class QuipConfigFile(yaml.YAMLObject):
         errors = stderr.readlines()
         if errors != []:
             raise QuipRemoteExecutionException(f"Error executing remote command: {errors}")
-        return stdout.readline().strip('\n')
+        return stdout
 
     def _parse_ls(self, output: str) -> Tuple[str,str,str]:
         fields = output.split()
@@ -31,15 +31,24 @@ class QuipConfigFile(yaml.YAMLObject):
         return permissions, owner, group
 
     def needs_update(self, client: paramiko.SSHClient) -> bool:
-        # The file needs updating if it doesn't exist, content doesn't match, or permissions and owners are incorrect
-        out = self._remote_exec(client, f'[ -e "{self.path}" ] && echo 1 || echo 0')
+        # The file needs updating if it doesn't exist, permissions/owner/group different, or content changed
+        out = self._remote_exec(client, f'[ -e "{self.path}" ] && echo 1 || echo 0').readline().strip('\n')
         if out == '0':
             logging.debug(f"File {self.path} does not exist on remote server")
             return True
 
-        out = self._remote_exec(client, f"ls -al {self.path}")
+        # Check metadata with ls -al
+        out = self._remote_exec(client, f"ls -al {self.path}").readline().strip('\n')
         permissions, owner, group = self._parse_ls(out)
         logging.debug(f"File {self.path} permissions: {permissions} {owner} {group}")
+        if permissions != self.permissions or owner != self.owner or group != self.group:
+            return True
+
+        # Check content with cat
+        out = """""".join(self._remote_exec(client, f"cat {self.path}").readlines())
+        if out.strip('\n') != self.content.strip('\n'):  
+            logging.debug(f"File {self.path} content has changed")
+            return True
 
         return False
         

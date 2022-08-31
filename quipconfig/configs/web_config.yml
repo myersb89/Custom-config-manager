@@ -6,7 +6,9 @@ packages:
 files:
 -
   !File
-  content: this is a config
+  content: 
+    |
+    this is a config
   path: nginx.conf
   owner: root
   group: root
