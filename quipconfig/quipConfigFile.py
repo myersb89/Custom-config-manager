@@ -43,18 +43,11 @@ class QuipConfigFile(yaml.YAMLObject):
 
         return False
         
-
     def update(self, client: paramiko.SSHClient):
-        print(f"Updating file {self.path}")
-        stdin, stdout, stderr = client.exec_command(f"""cat << 'EOF' > {self.path}
+        out = self._remote_exec(client, f"""cat << 'EOF' > {self.path}
 {self.content}
-EOF""")
-
-        errors = stderr.readlines()
-        print(errors)
-        if errors != []:
-            logging.error(f"Error executing remote command: {errors}")
-        
+EOF""") 
+        print(f"Updated file {self.path}")       
 
     def restart_package(self):
         pass
