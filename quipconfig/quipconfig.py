@@ -2,6 +2,8 @@ import argparse
 import yaml
 import pathlib
 import logging
+import paramiko
+import getpass
 from .quipConfigFile import QuipConfigFile
 from .quipConfigPackage import QuipConfigPackage
 from typing import Tuple
@@ -30,6 +32,20 @@ def main():
 
     logging.debug(files)
     logging.debug(packages)
+
+    # Connect to the host
+    client = paramiko.SSHClient()
+    client.load_system_host_keys()
+    client.set_missing_host_key_policy(paramiko.client.WarningPolicy)
+    hostip="127.0.0.1"
+    user="root"
+    password = getpass.getpass(prompt=f"Input password for host {hostip}: ")
+    client.connect(hostip, username=user, password=password, port=2222)
+
+    # Main logic loop: Apply the configuration idempotently
+    for f in files:
+        if f.needs_update(client):
+            f.update(client)
 
 def read_role_config(role: str) -> dict:
     path = pathlib.Path((pathlib.Path(__file__).resolve().parent).joinpath(f"configs\{role}_config.yml"))
