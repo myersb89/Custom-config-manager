@@ -41,6 +41,7 @@ class QuipConfigFile(yaml.YAMLObject):
 EOF""")
 
         errors = stderr.readlines()
+        print(errors)
         if errors != []:
             logging.error(f"Error executing remote command: {errors}")
         
