@@ -1,0 +1,2 @@
+class QuipRemoteExecutionException(Exception):
+    pass
