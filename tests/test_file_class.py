@@ -1,5 +1,6 @@
 import pytest
 import paramiko
+import logging
 from yaml import safe_load
 from typing import Tuple
 from unittest.mock import patch, MagicMock
@@ -48,13 +49,15 @@ permissions: -rw-r--r--
         return stdin, stdout, stderr
 
     @patch('paramiko.SSHClient')
-    def test_update_happy_path(self, mockSshClient, capsys):
+    def test_update_happy_path(self, mockSshClient, caplog):
         mockSshClient.exec_command.side_effect = self._exec_command_side_effect_happy
 
-        self.testFile.update(mockSshClient)
+        with caplog.at_level(logging.DEBUG):
+            self.testFile.update(mockSshClient)
 
-        captured = capsys.readouterr()
-        assert "updated file" in captured.out
+       # captured = capsys.readouterr()
+        print(caplog.text)
+        assert "updated file" in caplog.text
 
     @patch('paramiko.SSHClient')
     def test_update_with_error(self, mockSshClient):

@@ -69,7 +69,7 @@ EOF""")
         out = self._remote_exec(client, f"chown {self.owner} {self.path}")
         out = self._remote_exec(client, f"chgrp {self.group} {self.path}")
         out = self._remote_exec(client, f"chmod {self._xform_permissions(self.permissions)} {self.path}")
-
+        
         logging.debug(f"{client.get_transport().getpeername()}: updated file {self.path}")       
 
     def restart_package(self):
