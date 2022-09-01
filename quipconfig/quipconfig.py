@@ -44,6 +44,12 @@ def main():
     client.connect(hostip, username=user, password=password, port=2222)
 
     # Main logic loop: Apply the configuration idempotently
+    for p in packages:
+        if not p.is_installed(client) and p.action == "install":
+            p.install(client)
+        elif p.is_installed(client) and p.action == "uninstall":
+            p.uninstall(client)
+
     for f in files:
         if f.needs_update(client):
             f.update(client)

@@ -3,6 +3,7 @@ packages:
   !Package
   name: nginx
   version: 1.22
+  action: install
 files:
 -
   !File
