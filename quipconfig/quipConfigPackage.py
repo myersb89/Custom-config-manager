@@ -1,4 +1,8 @@
 import yaml
+import paramiko
+import logging
+
+from .quipRemoteExecutionException import QuipRemoteExecutionException
 
 class QuipConfigPackage(yaml.YAMLObject):
     yaml_tag = u'!Package'
@@ -16,7 +20,15 @@ class QuipConfigPackage(yaml.YAMLObject):
             raise QuipRemoteExecutionException(f"Error executing remote command: {errors}")
         return stdout
 
-    def is_installed(self, client: paramiko.SSHClient) -> bool: 
+    def is_installed(self, client: paramiko.SSHClient) -> bool:
+        logging.debug(f"{client.get_transport().getpeername()}: Checking {self.name} ...") 
+        out = self._remote_exec(client, f"dpkg-query -W | grep {self.name}").readline().strip('\n')
+        if out != "":
+            version = out.split('\t')[1]
+            if version == self.version:
+                logging.debug(f"{client.get_transport().getpeername()}: {self.name} {self.version} is installed")
+                return True
+        logging.debug(f"{client.get_transport().getpeername()}: {self.name} {self.version} is not installed")
         return False
     
     def install(self, client: paramiko.SSHClient):

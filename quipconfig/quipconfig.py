@@ -31,8 +31,8 @@ def main():
     data = read_role_config(role)
     files, packages = parse_role_config(data)
 
-    logging.debug(files)
-    logging.debug(packages)
+    #logging.debug(files)
+    #logging.debug(packages)
 
     # Connect to the host
     client = paramiko.SSHClient()
@@ -41,13 +41,16 @@ def main():
     hostip="127.0.0.1"
     user="root"
     password = getpass.getpass(prompt=f"Input password for host {hostip}: ")
+
+    logging.debug(f"Connecting to host {hostip}...")
     client.connect(hostip, username=user, password=password, port=2222)
 
     # Main logic loop: Apply the configuration idempotently
     for p in packages:
-        if not p.is_installed(client) and p.action == "install":
+        installed = p.is_installed(client)
+        if not installed and p.action == "install":
             p.install(client)
-        elif p.is_installed(client) and p.action == "uninstall":
+        elif installed and p.action == "uninstall":
             p.uninstall(client)
 
     for f in files:

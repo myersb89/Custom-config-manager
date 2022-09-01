@@ -1,6 +1,11 @@
 packages:
 -
   !Package
+  name: wget
+  version: 1.19.4-1ubuntu2.2
+  action: install
+- 
+  !Package
   name: nginx
   version: 1.22
   action: install

@@ -37,6 +37,7 @@ class QuipConfigFile(yaml.YAMLObject):
 
     def needs_update(self, client: paramiko.SSHClient) -> bool:
         # The file needs updating if it doesn't exist, permissions/owner/group different, or content changed
+        logging.debug(f"{client.get_transport().getpeername()}: Checking {self.path} ...")
         out = self._remote_exec(client, f'[ -e "{self.path}" ] && echo 1 || echo 0').readline().strip('\n')
         if out == '0':
             logging.debug(f"{client.get_transport().getpeername()}: {self.path} does not exist")
@@ -56,10 +57,12 @@ class QuipConfigFile(yaml.YAMLObject):
             logging.debug(f"{client.get_transport().getpeername()}: {self.path} content has changed")
             return True
 
+        logging.debug(f"{client.get_transport().getpeername()}: {self.path} is up to date")
         return False
         
     def update(self, client: paramiko.SSHClient):
         # Create/Update file, owner, group, permissions
+        logging.debug(f"{client.get_transport().getpeername()}: Updating {self.path}")
         out = self._remote_exec(client, f"""cat << 'EOF' > {self.path}
 {self.content}
 EOF""") 
@@ -67,7 +70,7 @@ EOF""")
         out = self._remote_exec(client, f"chgrp {self.group} {self.path}")
         out = self._remote_exec(client, f"chmod {self._xform_permissions(self.permissions)} {self.path}")
 
-        print(f"{client.get_transport().getpeername()}: updated file {self.path}")       
+        logging.debug(f"{client.get_transport().getpeername()}: updated file {self.path}")       
 
     def restart_package(self):
         pass
