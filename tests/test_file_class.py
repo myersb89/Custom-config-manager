@@ -5,7 +5,7 @@ from yaml import safe_load
 from typing import Tuple
 from unittest.mock import patch, MagicMock
 from quipconfig.quipConfigFile import QuipConfigFile
-from quipconfig.quipRemoteExecutionException import QuipRemoteExecutionException
+from quipconfig.quipRemoteExecution import QuipRemoteExecutionException, quip_remote_exec
 
 class TestQuipConfigFile():
     def setup(self):
@@ -104,7 +104,3 @@ permissions: -rw-r--r--
     def test_xform_permissions(self):
         permissions = self.testFile._xform_permissions("drwxr-xr-x")
         assert permissions == "755"
-
-    def test_restart_package(self):
-        self.testFile.restart_package()
-        pass
