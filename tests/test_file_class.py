@@ -19,7 +19,7 @@ permissions: -rw-r--r--
 """
         self.testFile = safe_load(yaml)
 
-    # Provide various working return values for paramiko exec_commands
+    # Provide various working return values for paramiko exec_commands to test methods that need to call multiple remote commands
     def _exec_command_side_effect_happy(self, arg):
         stdin, stdout, stderr = MagicMock(), MagicMock(), MagicMock()
         cmd = arg.split()[0]

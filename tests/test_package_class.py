@@ -17,16 +17,6 @@ action: install
 """
         self.testPackage = safe_load(yaml)
 
-    def _exec_command_side_effect_happy(self, arg):
-        stdin, stdout, stderr = MagicMock(), MagicMock(), MagicMock()
-        cmd = arg.split()[0]
-
-        if cmd == "" :
-            stderr.readlines.return_value = []
-            stdout.readline.return_value = ""
-
-        return stdin, stdout, stderr
-
     @patch('paramiko.SSHClient')
     def test_is_installed_true(self, mockSshClient):
         stdin, stdout, stderr = MagicMock(), MagicMock(), MagicMock()
@@ -70,3 +60,40 @@ action: install
         result = self.testPackage.is_installed(mockSshClient)
 
         assert result == False
+
+    @patch('paramiko.SSHClient')
+    def test_remote_exec_ignore(self, mockSshClient):
+        stdin, stdout, stderr = MagicMock(), MagicMock(), MagicMock()
+        stdout.readlines.return_value = ["installed"]
+        stderr.readlines.return_value = ["debconf: delaying package configuration, since apt-utils is not installed"]
+        mockSshClient.exec_command.return_value = (stdin, stdout, stderr)
+        
+        result = self.testPackage._remote_exec(mockSshClient, 'apt-get install -y nginx')
+
+        assert result.readlines() == ["installed"]
+
+    @patch('paramiko.SSHClient')
+    def test_remote_exec_ignore_with_error(self, mockSshClient):
+        stdin, stdout, stderr = MagicMock(), MagicMock(), MagicMock()
+        stdout.readlines.return_value = ["installed"]
+        stderr.readlines.return_value = ["debconf: delaying package configuration, since apt-utils is not installed", "an actual error"]
+        mockSshClient.exec_command.return_value = (stdin, stdout, stderr)
+        
+        with pytest.raises(QuipRemoteExecutionException) as e:
+            result = self.testPackage._remote_exec(mockSshClient, 'apt-get install -y nginx')
+
+        assert e.type is QuipRemoteExecutionException
+    
+    @patch('paramiko.SSHClient')
+    def test_is_install(self, mockSshClient, caplog):
+        stdin, stdout, stderr = MagicMock(), MagicMock(), MagicMock()
+        stdout.readlines.return_value = ["Preparing to unpack .../nginx_1.14.0-0ubuntu1.10_all.deb ...\n", 
+                                         "Unpacking nginx (1.14.0-0ubuntu1.10) ... \n",
+                                         "Setting up nginx (1.14.0-0ubuntu1.10) ...\n"]
+        stderr.readlines.return_value = []
+        mockSshClient.exec_command.return_value = (stdin, stdout, stderr)
+        
+        with caplog.at_level(logging.DEBUG):
+            self.testPackage.install(mockSshClient)
+
+        assert "Installed" in caplog.text
