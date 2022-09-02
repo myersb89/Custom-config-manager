@@ -1,36 +1,52 @@
 packages:
--
-  !Package
-  name: wget
-  version: '1.19.4-1ubuntu2.2'
-  action: install
-  restart: []
 - 
   !Package
   name: nginx
   version: '1.14.0-0ubuntu1.10'
   action: install
   restart: []
+- 
+  !Package
+  name: php-fpm
+  version: '1:7.2+60ubuntu1'
+  action: install
+  restart: [nginx]
 files:
 -
   !File
+  path: /etc/nginx/sites-available/default
   content: 
     |
-    this is a config
-  path: nginx.conf
+    server {
+      listen 80 default_server;
+      root /var/www/html;
+  
+      index app.php;
+
+      server_name _;
+  
+      location / {
+          try_files $uri $uri/ =404;
+      }
+  
+      location ~ \.php$ {
+          include snippets/fastcgi-php.conf;
+          fastcgi_pass unix:/var/run/php/php7.2-fpm.sock;
+      }
+    }
   owner: root
   group: root
   permissions: -rw-r--r--
   restart: ["nginx"]
 -
   !File
+  path: /var/www/html/app.php
   content:
     |
     <?php
     header("Content-Type: text/plain");
     echo "Hello, world!\n";
-  path: app.php
   owner: root
   group: root
   permissions: -rw-r--r--
-  restart: ["nginx"]
+  restart: []

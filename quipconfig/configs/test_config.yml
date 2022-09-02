@@ -1,0 +1,36 @@
+packages:
+-
+  !Package
+  name: wget
+  version: '1.19.4-1ubuntu2.2'
+  action: install
+  restart: []
+- 
+  !Package
+  name: nginx
+  version: '1.14.0-0ubuntu1.10'
+  action: install
+  restart: []
+files:
+-
+  !File
+  content: 
+    |
+    this is a config
+  path: nginx.conf
+  owner: root
+  group: root
+  permissions: -rw-r--r--
+  restart: ["nginx"]
+-
+  !File
+  content:
+    |
+    <?php
+    header("Content-Type: text/plain");
+    echo "Hello, world!\n";
+  path: app.php
+  owner: root
+  group: root
+  permissions: -rw-r--r--
+  restart: ["nginx"]
