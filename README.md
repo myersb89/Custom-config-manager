@@ -2,10 +2,10 @@
 TODOS:
 - Document how to create a config
     - bonus, add a wizard?
-- Tests for file class
 - file class restart stuff
 - invalid config file exception
 - finish package functionality
+- allow for latest version of package
 
 # Test Environment
 docker build -t test-ssh .

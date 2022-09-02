@@ -22,20 +22,24 @@ class QuipConfigPackage(yaml.YAMLObject):
 
     def is_installed(self, client: paramiko.SSHClient) -> bool:
         logging.debug(f"{client.get_transport().getpeername()}: Checking {self.name} ...") 
-        out = self._remote_exec(client, f"dpkg-query -W | grep {self.name}").readline().strip('\n')
-        if out != "":
-            version = out.split('\t')[1]
-            if version == self.version:
+        out = self._remote_exec(client, f"dpkg-query -W | grep {self.name}").readlines()
+        for pkg in out:
+            pkg = pkg.strip('\n')
+            if pkg.split('\t')[0] == self.name and pkg.split('\t')[1] == self.version:
                 logging.debug(f"{client.get_transport().getpeername()}: {self.name} {self.version} is installed")
                 return True
         logging.debug(f"{client.get_transport().getpeername()}: {self.name} {self.version} is not installed")
         return False
     
     def install(self, client: paramiko.SSHClient):
-        pass
+        logging.debug(f"{client.get_transport().getpeername()}: Installing {self.name} ...") 
+        out = self._remote_exec(client, f"apt-get install -y {self.name}={self.version}").readline().strip('\n')
+        logging.debug(f"{client.get_transport().getpeername()}: Installed {self.name} ...")
 
     def uninstall(self, client: paramiko.SSHClient):
-        pass
+        logging.debug(f"{client.get_transport().getpeername()}: Uninstalling {self.name} ...") 
+        out = self._remote_exec(client, f"apt-get remove -y {self.name}={self.version}").readline().strip('\n')
+        logging.debug(f"{client.get_transport().getpeername()}: Uninstalled {self.name} ...")
 
     def restart(self):
         pass

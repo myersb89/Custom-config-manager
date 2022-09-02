@@ -7,7 +7,7 @@ packages:
 - 
   !Package
   name: nginx
-  version: '1.22'
+  version: '1.14.0-0ubuntu1.10'
   action: install
 files:
 -
