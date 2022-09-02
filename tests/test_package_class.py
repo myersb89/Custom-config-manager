@@ -15,7 +15,14 @@ name: wget
 version: '1.22'
 action: install
 """
+        yaml_uninstall = """
+!Package
+name: nginx
+version: '1.14.0-0ubuntu1.10'
+action: uninstall
+"""
         self.testPackage = safe_load(yaml)
+        self.testPackageUninstall = safe_load(yaml)
 
     @patch('paramiko.SSHClient')
     def test_is_installed_true(self, mockSshClient):
@@ -85,7 +92,7 @@ action: install
         assert e.type is QuipRemoteExecutionException
     
     @patch('paramiko.SSHClient')
-    def test_is_install(self, mockSshClient, caplog):
+    def test_install(self, mockSshClient, caplog):
         stdin, stdout, stderr = MagicMock(), MagicMock(), MagicMock()
         stdout.readlines.return_value = ["Preparing to unpack .../nginx_1.14.0-0ubuntu1.10_all.deb ...\n", 
                                          "Unpacking nginx (1.14.0-0ubuntu1.10) ... \n",
@@ -97,3 +104,15 @@ action: install
             self.testPackage.install(mockSshClient)
 
         assert "Installed" in caplog.text
+
+    @patch('paramiko.SSHClient')
+    def test_uninstall(self, mockSshClient, caplog):
+        stdin, stdout, stderr = MagicMock(), MagicMock(), MagicMock()
+        stdout.readlines.return_value = ["Removing nginx (1.14.0-0ubuntu1.10) ..."]
+        stderr.readlines.return_value = []
+        mockSshClient.exec_command.return_value = (stdin, stdout, stderr)
+        
+        with caplog.at_level(logging.DEBUG):
+            self.testPackage.uninstall(mockSshClient)
+
+        assert "Uninstalled" in caplog.text

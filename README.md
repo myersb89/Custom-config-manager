@@ -6,6 +6,8 @@ TODOS:
 - invalid config file exception
 - finish package functionality
 - allow for latest version of package
+- str/print reprs for objects
+- parallelization per host 
 
 # Test Environment
 docker build -t test-ssh .
