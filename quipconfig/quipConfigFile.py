@@ -2,7 +2,7 @@ import yaml
 import paramiko
 import logging
 from typing import Tuple
-from .quipRemoteExecution import QuipRemoteExecutionException, quip_remote_exec
+from .quipRemoteExecution import QuipRemoteExecutionException, QuipRemoteHost
 
 class QuipConfigFile(yaml.YAMLObject):
     yaml_tag = u'!File'
@@ -29,40 +29,40 @@ class QuipConfigFile(yaml.YAMLObject):
                  "r--": "4", "r-x": "5", "rw-": "6", "rwx": "7"}
         return "".join([xform[permissions[1:4]], xform[permissions[4:7]], xform[permissions[7:]]])
 
-    def needs_update(self, client: paramiko.SSHClient) -> bool:
+    def needs_update(self, client: QuipRemoteHost) -> bool:
         # The file needs updating if it doesn't exist, permissions/owner/group different, or content changed
-        logging.debug(f"{client.get_transport().getpeername()}: Checking {self.path} ...")
-        out = quip_remote_exec(client, f'[ -e "{self.path}" ] && echo 1 || echo 0').readline().strip('\n')
+        logging.debug(f"{client.log_prefix}: Checking {self.path} ...")
+        out = client.remote_exec(client, f'[ -e "{self.path}" ] && echo 1 || echo 0').readline().strip('\n')
         if out == '0':
-            logging.debug(f"{client.get_transport().getpeername()}: {self.path} does not exist")
+            logging.debug(f"{client.log_prefix}: {self.path} does not exist")
             return True
 
         # Check metadata with ls -al
-        out = quip_remote_exec(client, f"ls -al {self.path}").readline().strip('\n')
+        out = client.remote_exec(client, f"ls -al {self.path}").readline().strip('\n')
         permissions, owner, group = self._parse_ls(out)
-        logging.debug(f"{client.get_transport().getpeername()}: {self.path} permissions: {permissions} {owner} {group}")
+        logging.debug(f"{client.log_prefix}: {self.path} permissions: {permissions} {owner} {group}")
         if permissions != self.permissions or owner != self.owner or group != self.group:
-            logging.debug(f"{client.get_transport().getpeername()}: {self.path} permissions have changed")
+            logging.debug(f"{client.log_prefix}: {self.path} permissions have changed")
             return True
 
         # Check content with cat
-        out = """""".join(quip_remote_exec(client, f"cat {self.path}").readlines())
+        out = """""".join(client.remote_exec(client, f"cat {self.path}").readlines())
         if out.strip('\n') != self.content.strip('\n'):  
-            logging.debug(f"{client.get_transport().getpeername()}: {self.path} content has changed")
+            logging.debug(f"{client.log_prefix}: {self.path} content has changed")
             return True
 
-        logging.debug(f"{client.get_transport().getpeername()}: {self.path} is up to date")
+        logging.debug(f"{client.log_prefix}: {self.path} is up to date")
         return False
         
-    def update(self, client: paramiko.SSHClient):
+    def update(self, client: QuipRemoteHost):
         # Create/Update file, owner, group, permissions
-        logging.debug(f"{client.get_transport().getpeername()}: Updating {self.path}")
-        out = quip_remote_exec(client, f"""cat << 'EOF' > {self.path}
+        logging.debug(f"{client.log_prefix}: Updating {self.path}")
+        out = client.remote_exec(client, f"""cat << 'EOF' > {self.path}
 {self.content}
 EOF""") 
-        out = quip_remote_exec(client, f"chown {self.owner} {self.path}")
-        out = quip_remote_exec(client, f"chgrp {self.group} {self.path}")
-        out = quip_remote_exec(client, f"chmod {self._xform_permissions(self.permissions)} {self.path}")
+        out = client.remote_exec(client, f"chown {self.owner} {self.path}")
+        out = client.remote_exec(client, f"chgrp {self.group} {self.path}")
+        out = client.remote_exec(client, f"chmod {self._xform_permissions(self.permissions)} {self.path}")
         
-        logging.debug(f"{client.get_transport().getpeername()}: updated file {self.path}")       
+        logging.debug(f"{client.log_prefix}: updated file {self.path}")       
 

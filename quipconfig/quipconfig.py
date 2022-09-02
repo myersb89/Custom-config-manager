@@ -6,7 +6,7 @@ import paramiko
 import getpass
 from .quipConfigFile import QuipConfigFile
 from .quipConfigPackage import QuipConfigPackage
-from .quipRemoteExecution import QuipRemoteExecutionException, quip_remote_exec
+from .quipRemoteExecution import QuipRemoteExecutionException, QuipRemoteHost, quip_remote_exec
 from typing import Tuple
 
 def main():
@@ -36,15 +36,10 @@ def main():
     #logging.debug(packages)
 
     # Connect to the host
-    client = paramiko.SSHClient()
-    client.load_system_host_keys()
-    client.set_missing_host_key_policy(paramiko.client.WarningPolicy)
-    hostip="127.0.0.1"
-    user="root"
-    password = getpass.getpass(prompt=f"Input password for host {hostip}: ")
-
+    hostip = "127.0.0.1"
+    client = QuipRemoteHost(hostip, 2222, "root")
     logging.debug(f"Connecting to host {hostip}...")
-    client.connect(hostip, username=user, password=password, port=2222)
+    client.connect()
 
     # Main logic loop: Apply the configuration idempotently
     to_restart = set()
@@ -62,8 +57,8 @@ def main():
             f.update(client)
             to_restart.update(f.restart)
 
-    for service in to_restart:
-        restart_service(client, service)
+    #for service in to_restart:
+    #    restart_service(client, service)
         
 
 def read_role_config(role: str) -> dict:
