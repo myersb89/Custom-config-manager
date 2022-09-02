@@ -2,7 +2,7 @@ import yaml
 import paramiko
 import logging
 
-from .quipRemoteExecutionException import QuipRemoteExecutionException
+from .quipRemoteExecution import QuipRemoteExecutionException
 
 class QuipConfigPackage(yaml.YAMLObject):
     yaml_tag = u'!Package'

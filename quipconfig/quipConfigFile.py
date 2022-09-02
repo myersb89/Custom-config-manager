@@ -2,7 +2,7 @@ import yaml
 import paramiko
 import logging
 from typing import Tuple
-from .quipRemoteExecutionException import QuipRemoteExecutionException
+from .quipRemoteExecution import QuipRemoteExecutionException
 
 class QuipConfigFile(yaml.YAMLObject):
     yaml_tag = u'!File'
