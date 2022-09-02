@@ -6,6 +6,7 @@ import paramiko
 import getpass
 from .quipConfigFile import QuipConfigFile
 from .quipConfigPackage import QuipConfigPackage
+from .quipRemoteExecution import QuipRemoteExecutionException, quip_remote_exec
 from typing import Tuple
 
 def main():
@@ -61,7 +62,9 @@ def main():
             f.update(client)
             to_restart.update(f.restart)
 
-    print(to_restart)
+    for service in to_restart:
+        restart_service(client, service)
+        
 
 def read_role_config(role: str) -> dict:
     path = pathlib.Path((pathlib.Path(__file__).resolve().parent).joinpath(f"configs\{role}_config.yml"))
@@ -77,3 +80,15 @@ def read_role_config(role: str) -> dict:
 
 def parse_role_config(config_data: str) -> Tuple[list[QuipConfigFile], list[QuipConfigPackage]]:
     return config_data.get("files"), config_data.get("packages")
+
+def restart_service(client: paramiko.SSHClient, service: str):
+    try:
+        logging.debug(f"{client.get_transport().getpeername()}: Restarting {service} ...")
+        out = quip_remote_exec(client, f"systemctl restart {service}").readline().strip('\n')
+    except QuipRemoteExecutionException as e:
+        if "System has not been booted with systemd" in str(e):
+            logging.debug(f"{client.get_transport().getpeername()}: Systemd not configured on remote host, falling back to /etc/init.d script ...")
+            out = quip_remote_exec(client, f"/etc/init.d/{service} restart")
+        else:
+            raise
+    logging.debug(f"{client.get_transport().getpeername()}: Restarted {service}")
