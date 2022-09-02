@@ -5,7 +5,7 @@ from unittest.mock import patch, MagicMock
 from quipconfig.quipRemoteExecution import QuipRemoteExecutionException, quip_remote_exec
    
 @patch('paramiko.SSHClient')
-def test_remote_exec_ignore(self, mockSshClient):
+def test_remote_exec_ignore(mockSshClient):
     stdin, stdout, stderr = MagicMock(), MagicMock(), MagicMock()
     stdout.readlines.return_value = ["installed"]
     stderr.readlines.return_value = ["debconf: delaying package configuration, since apt-utils is not installed"]
@@ -16,7 +16,7 @@ def test_remote_exec_ignore(self, mockSshClient):
     assert result.readlines() == ["installed"]
 
 @patch('paramiko.SSHClient')
-def test_remote_exec_ignore_with_error(self, mockSshClient):
+def test_remote_exec_ignore_with_error(mockSshClient):
     stdin, stdout, stderr = MagicMock(), MagicMock(), MagicMock()
     stdout.readlines.return_value = ["installed"]
     stderr.readlines.return_value = ["debconf: delaying package configuration, since apt-utils is not installed", "an actual error"]
