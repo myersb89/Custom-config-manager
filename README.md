@@ -6,7 +6,6 @@ TODOS:
 - allow for latest version of package
 - str/print reprs for objects
 - parallelization per host 
-- restart tests
 - actually configure the web service
 
 # Test Environment
