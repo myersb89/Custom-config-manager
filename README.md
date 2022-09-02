@@ -7,7 +7,6 @@ TODOS:
 - str/print reprs for objects
 - parallelization per host 
 - actually configure the web service
-    - gets hung on interactive package stuff need to set env DEBIAN_FRONTEND=noninteractive
     - should really make a host object so I can do some init
 - package install should attempt to start the package if it doesn't start automatically
 - on file creation if the directory doesn't exist we should make it

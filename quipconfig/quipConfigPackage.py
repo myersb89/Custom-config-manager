@@ -29,11 +29,11 @@ class QuipConfigPackage(yaml.YAMLObject):
     
     def install(self, client: paramiko.SSHClient):
         logging.debug(f"{client.get_transport().getpeername()}: Installing {self.name} ...") 
-        out = quip_remote_exec(client, f"apt-get install -y {self.name}={self.version}").readline().strip('\n')
+        out = quip_remote_exec(client, f"DEBIAN_FRONTEND=noninteractive apt-get install -y {self.name}={self.version}").readline().strip('\n')
         logging.debug(f"{client.get_transport().getpeername()}: Installed {self.name} ...")
 
     def uninstall(self, client: paramiko.SSHClient):
         logging.debug(f"{client.get_transport().getpeername()}: Uninstalling {self.name} ...") 
-        out = quip_remote_exec(client, f"apt-get remove -y {self.name}={self.version}").readline().strip('\n')
+        out = quip_remote_exec(client, f"DEBIAN_FRONTEND=noninteractive apt-get remove -y {self.name}={self.version}").readline().strip('\n')
         logging.debug(f"{client.get_transport().getpeername()}: Uninstalled {self.name} ...")
 
