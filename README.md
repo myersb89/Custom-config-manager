@@ -2,12 +2,12 @@
 TODOS:
 - Document how to create a config
     - bonus, add a wizard?
-- file class restart stuff
 - invalid config file exception
-- finish package functionality
 - allow for latest version of package
 - str/print reprs for objects
 - parallelization per host 
+- restart tests
+- actually configure the web service
 
 # Test Environment
 docker build -t test-ssh .
