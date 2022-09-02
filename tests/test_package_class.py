@@ -5,7 +5,7 @@ from yaml import safe_load
 from typing import Tuple
 from unittest.mock import patch, MagicMock
 from quipconfig.quipConfigPackage import QuipConfigPackage
-from quipconfig.quipRemoteExecution import QuipRemoteExecutionException
+from quipconfig.quipRemoteExecution import QuipRemoteExecutionException, quip_remote_exec
 
 class TestQuipConfigPackage():
     def setup(self):
@@ -67,29 +67,6 @@ action: uninstall
         result = self.testPackage.is_installed(mockSshClient)
 
         assert result == False
-
-    @patch('paramiko.SSHClient')
-    def test_remote_exec_ignore(self, mockSshClient):
-        stdin, stdout, stderr = MagicMock(), MagicMock(), MagicMock()
-        stdout.readlines.return_value = ["installed"]
-        stderr.readlines.return_value = ["debconf: delaying package configuration, since apt-utils is not installed"]
-        mockSshClient.exec_command.return_value = (stdin, stdout, stderr)
-        
-        result = self.testPackage._remote_exec(mockSshClient, 'apt-get install -y nginx')
-
-        assert result.readlines() == ["installed"]
-
-    @patch('paramiko.SSHClient')
-    def test_remote_exec_ignore_with_error(self, mockSshClient):
-        stdin, stdout, stderr = MagicMock(), MagicMock(), MagicMock()
-        stdout.readlines.return_value = ["installed"]
-        stderr.readlines.return_value = ["debconf: delaying package configuration, since apt-utils is not installed", "an actual error"]
-        mockSshClient.exec_command.return_value = (stdin, stdout, stderr)
-        
-        with pytest.raises(QuipRemoteExecutionException) as e:
-            result = self.testPackage._remote_exec(mockSshClient, 'apt-get install -y nginx')
-
-        assert e.type is QuipRemoteExecutionException
     
     @patch('paramiko.SSHClient')
     def test_install(self, mockSshClient, caplog):
