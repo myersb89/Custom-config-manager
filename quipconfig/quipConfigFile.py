@@ -8,12 +8,13 @@ class QuipConfigFile(yaml.YAMLObject):
     yaml_tag = u'!File'
     yaml_loader = yaml.SafeLoader
 
-    def __init__(self, path: str, content: str, owner: str, group: str, permissions: str):
+    def __init__(self, path: str, content: str, owner: str, group: str, permissions: str, restart: list[str]):
         self.path = path
         self.content = content
         self.owner = owner
         self.group = group
         self.permissions = permissions
+        self.restart = restart
 
     def _remote_exec(self, client:paramiko.SSHClient, cmd: str) -> str:
         stdin, stdout, stderr = client.exec_command(cmd)
@@ -72,5 +73,3 @@ EOF""")
         
         logging.debug(f"{client.get_transport().getpeername()}: updated file {self.path}")       
 
-    def restart_package(self):
-        pass

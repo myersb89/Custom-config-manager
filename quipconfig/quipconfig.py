@@ -46,16 +46,22 @@ def main():
     client.connect(hostip, username=user, password=password, port=2222)
 
     # Main logic loop: Apply the configuration idempotently
+    to_restart = set()
     for p in packages:
         installed = p.is_installed(client)
         if not installed and p.action == "install":
             p.install(client)
+            to_restart.update(p.restart)
         elif installed and p.action == "uninstall":
             p.uninstall(client)
+            to_restart.update(p.restart)
 
     for f in files:
         if f.needs_update(client):
             f.update(client)
+            to_restart.update(f.restart)
+
+    print(to_restart)
 
 def read_role_config(role: str) -> dict:
     path = pathlib.Path((pathlib.Path(__file__).resolve().parent).joinpath(f"configs\{role}_config.yml"))

@@ -4,11 +4,13 @@ packages:
   name: wget
   version: '1.19.4-1ubuntu2.2'
   action: install
+  restart: []
 - 
   !Package
   name: nginx
   version: '1.14.0-0ubuntu1.10'
-  action: uninstall
+  action: install
+  restart: []
 files:
 -
   !File
@@ -19,6 +21,7 @@ files:
   owner: root
   group: root
   permissions: -rw-r--r--
+  restart: ["nginx"]
 -
   !File
   content:
@@ -30,3 +33,4 @@ files:
   owner: root
   group: root
   permissions: -rw-r--r--
+  restart: ["nginx"]

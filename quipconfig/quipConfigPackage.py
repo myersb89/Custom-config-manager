@@ -8,10 +8,11 @@ class QuipConfigPackage(yaml.YAMLObject):
     yaml_tag = u'!Package'
     yaml_loader = yaml.SafeLoader
 
-    def __init__(self, name: str, version: str, action: str):
+    def __init__(self, name: str, version: str, action: str, restart: list[str]):
         self.name = name
         self.version = version
         self.action = action
+        self.restart = restart
 
     def _remote_exec(self, client:paramiko.SSHClient, cmd: str) -> str:  
         stdin, stdout, stderr = client.exec_command(cmd)
@@ -49,5 +50,3 @@ class QuipConfigPackage(yaml.YAMLObject):
         out = self._remote_exec(client, f"apt-get remove -y {self.name}={self.version}").readline().strip('\n')
         logging.debug(f"{client.get_transport().getpeername()}: Uninstalled {self.name} ...")
 
-    def restart(self):
-        pass
