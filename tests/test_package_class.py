@@ -5,7 +5,7 @@ from yaml import safe_load
 from typing import Tuple
 from unittest.mock import patch, MagicMock
 from quipconfig.quipConfigPackage import QuipConfigPackage
-from quipconfig.quipRemoteExecution import QuipRemoteExecutionException, quip_remote_exec
+from quipconfig.quipRemoteExecution import QuipRemoteExecutionException, QuipRemoteHost, quip_remote_exec
 
 class TestQuipConfigPackage():
     def setup(self):
@@ -23,6 +23,7 @@ action: uninstall
 """
         self.testPackage = safe_load(yaml)
         self.testPackageUninstall = safe_load(yaml)
+        self.testHost = QuipRemoteHost("127.0.0.1", 22, "root")
 
     @patch('paramiko.SSHClient')
     def test_is_installed_true(self, mockSshClient):
@@ -30,8 +31,9 @@ action: uninstall
         stdout.readlines.return_value = ["wget\t1.22"]
         stderr.readlines.return_value = []
         mockSshClient.exec_command.return_value = (stdin, stdout, stderr)
+        self.testHost.client = mockSshClient
         
-        result = self.testPackage.is_installed(mockSshClient)
+        result = self.testPackage.is_installed(self.testHost)
 
         assert result == True
 
@@ -41,8 +43,9 @@ action: uninstall
         stdout.readlines.return_value = [""]
         stderr.readlines.return_value = []
         mockSshClient.exec_command.return_value = (stdin, stdout, stderr)
+        self.testHost.client = mockSshClient
         
-        result = self.testPackage.is_installed(mockSshClient)
+        result = self.testPackage.is_installed(self.testHost)
 
         assert result == False
 
@@ -52,8 +55,9 @@ action: uninstall
         stdout.readlines.return_value = ["wget\t1.21"]
         stderr.readlines.return_value = []
         mockSshClient.exec_command.return_value = (stdin, stdout, stderr)
+        self.testHost.client = mockSshClient
         
-        result = self.testPackage.is_installed(mockSshClient)
+        result = self.testPackage.is_installed(self.testHost)
 
         assert result == False
 
@@ -63,8 +67,9 @@ action: uninstall
         stdout.readlines.return_value = ["libwget\t1.22"]
         stderr.readlines.return_value = []
         mockSshClient.exec_command.return_value = (stdin, stdout, stderr)
+        self.testHost.client = mockSshClient
         
-        result = self.testPackage.is_installed(mockSshClient)
+        result = self.testPackage.is_installed(self.testHost)
 
         assert result == False
     
@@ -76,9 +81,10 @@ action: uninstall
                                          "Setting up nginx (1.14.0-0ubuntu1.10) ...\n"]
         stderr.readlines.return_value = []
         mockSshClient.exec_command.return_value = (stdin, stdout, stderr)
+        self.testHost.client = mockSshClient
         
         with caplog.at_level(logging.DEBUG):
-            self.testPackage.install(mockSshClient)
+            self.testPackage.install(self.testHost)
 
         assert "Installed" in caplog.text
 

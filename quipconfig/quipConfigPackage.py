@@ -16,7 +16,7 @@ class QuipConfigPackage(yaml.YAMLObject):
 
     def is_installed(self, client: QuipRemoteHost) -> bool:
         logging.debug(f"{client.log_prefix} Checking {self.name} ...") 
-        out = client.remote_exec(client, f"dpkg-query -W | grep {self.name}").readlines()
+        out = client.remote_exec(f"dpkg-query -W | grep {self.name}").readlines()
 
         # Packages can have similar names. Grep narrows it down but need to check for exact match
         for pkg in out:
@@ -29,11 +29,11 @@ class QuipConfigPackage(yaml.YAMLObject):
     
     def install(self, client: QuipRemoteHost):
         logging.debug(f"{client.log_prefix}: Installing {self.name} ...") 
-        out = client.remote_exec(client, f"DEBIAN_FRONTEND=noninteractive apt-get install -y {self.name}={self.version}").readline().strip('\n')
+        out = client.remote_exec(f"DEBIAN_FRONTEND=noninteractive apt-get install -y {self.name}={self.version}").readline().strip('\n')
         logging.debug(f"{client.log_prefix}: Installed {self.name} ...")
 
     def uninstall(self, client: QuipRemoteHost):
         logging.debug(f"{client.log_prefix}: Uninstalling {self.name} ...") 
-        out = client.remote_exec(client, f"DEBIAN_FRONTEND=noninteractive apt-get remove -y {self.name}={self.version}").readline().strip('\n')
+        out = client.remote_exec(f"DEBIAN_FRONTEND=noninteractive apt-get remove -y {self.name}={self.version}").readline().strip('\n')
         logging.debug(f"{client.log_prefix}: Uninstalled {self.name} ...")
 

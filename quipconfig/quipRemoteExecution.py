@@ -18,7 +18,7 @@ class QuipRemoteHost():
     def connect(self):
         self.client.connect(self.host, port=self.port, username=self.user, password=getpass.getpass(prompt=f"Input password for host {self.host}: "))
 
-    def remote_exec(self, client:paramiko.SSHClient, cmd: str) -> str:  
+    def remote_exec(self, cmd: str) -> str:  
         stdin, stdout, stderr = self.client.exec_command(cmd)
         errors = stderr.readlines()
 

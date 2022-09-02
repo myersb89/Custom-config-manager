@@ -30,15 +30,18 @@ class QuipConfigFile(yaml.YAMLObject):
         return "".join([xform[permissions[1:4]], xform[permissions[4:7]], xform[permissions[7:]]])
 
     def needs_update(self, client: QuipRemoteHost) -> bool:
+        print(client)
         # The file needs updating if it doesn't exist, permissions/owner/group different, or content changed
         logging.debug(f"{client.log_prefix}: Checking {self.path} ...")
-        out = client.remote_exec(client, f'[ -e "{self.path}" ] && echo 1 || echo 0').readline().strip('\n')
+        out = client.remote_exec(f'[ -e "{self.path}" ] && echo 1 || echo 0').readline().strip('\n')
+        print(out)
         if out == '0':
             logging.debug(f"{client.log_prefix}: {self.path} does not exist")
             return True
 
         # Check metadata with ls -al
-        out = client.remote_exec(client, f"ls -al {self.path}").readline().strip('\n')
+        out = client.remote_exec(f"ls -al {self.path}").readline().strip('\n')
+        print(out)
         permissions, owner, group = self._parse_ls(out)
         logging.debug(f"{client.log_prefix}: {self.path} permissions: {permissions} {owner} {group}")
         if permissions != self.permissions or owner != self.owner or group != self.group:
@@ -46,7 +49,8 @@ class QuipConfigFile(yaml.YAMLObject):
             return True
 
         # Check content with cat
-        out = """""".join(client.remote_exec(client, f"cat {self.path}").readlines())
+        out = """""".join(client.remote_exec(f"cat {self.path}").readlines())
+        print(out)
         if out.strip('\n') != self.content.strip('\n'):  
             logging.debug(f"{client.log_prefix}: {self.path} content has changed")
             return True
@@ -57,12 +61,12 @@ class QuipConfigFile(yaml.YAMLObject):
     def update(self, client: QuipRemoteHost):
         # Create/Update file, owner, group, permissions
         logging.debug(f"{client.log_prefix}: Updating {self.path}")
-        out = client.remote_exec(client, f"""cat << 'EOF' > {self.path}
+        out = client.remote_exec(f"""cat << 'EOF' > {self.path}
 {self.content}
 EOF""") 
-        out = client.remote_exec(client, f"chown {self.owner} {self.path}")
-        out = client.remote_exec(client, f"chgrp {self.group} {self.path}")
-        out = client.remote_exec(client, f"chmod {self._xform_permissions(self.permissions)} {self.path}")
+        out = client.remote_exec(f"chown {self.owner} {self.path}")
+        out = client.remote_exec(f"chgrp {self.group} {self.path}")
+        out = client.remote_exec(f"chmod {self._xform_permissions(self.permissions)} {self.path}")
         
         logging.debug(f"{client.log_prefix}: updated file {self.path}")       
 
