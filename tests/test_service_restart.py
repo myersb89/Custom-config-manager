@@ -2,7 +2,7 @@ import pytest
 import paramiko
 import logging
 from unittest.mock import patch, MagicMock
-from quipconfig.quipRemoteExecution import QuipRemoteExecutionException, quip_remote_exec
+from quipconfig.quipRemoteExecution import QuipRemoteExecutionException
 from quipconfig.quipconfig import *
    
 @patch('paramiko.SSHClient')

@@ -22,18 +22,18 @@ class QuipConfigPackage(yaml.YAMLObject):
         for pkg in out:
             pkg = pkg.strip('\n')
             if pkg.split('\t')[0] == self.name and pkg.split('\t')[1] == self.version:
-                logging.debug(f"{client.log_prefix}: {self.name} {self.version} is installed")
+                logging.debug(f"{client.log_prefix} {self.name} {self.version} is installed")
                 return True
-        logging.debug(f"{client.log_prefix}: {self.name} {self.version} is not installed")
+        logging.debug(f"{client.log_prefix} {self.name} {self.version} is not installed")
         return False
     
     def install(self, client: QuipRemoteHost):
-        logging.debug(f"{client.log_prefix}: Installing {self.name} ...") 
+        logging.debug(f"{client.log_prefix} Installing {self.name} ...") 
         out = client.remote_exec(f"DEBIAN_FRONTEND=noninteractive apt-get install -y {self.name}={self.version}").readline().strip('\n')
-        logging.debug(f"{client.log_prefix}: Installed {self.name} ...")
+        logging.debug(f"{client.log_prefix} Installed {self.name} ...")
 
     def uninstall(self, client: QuipRemoteHost):
-        logging.debug(f"{client.log_prefix}: Uninstalling {self.name} ...") 
+        logging.debug(f"{client.log_prefix} Uninstalling {self.name} ...") 
         out = client.remote_exec(f"DEBIAN_FRONTEND=noninteractive apt-get remove -y {self.name}={self.version}").readline().strip('\n')
-        logging.debug(f"{client.log_prefix}: Uninstalled {self.name} ...")
+        logging.debug(f"{client.log_prefix} Uninstalled {self.name} ...")
 

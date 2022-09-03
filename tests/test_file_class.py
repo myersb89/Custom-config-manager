@@ -5,7 +5,7 @@ from yaml import safe_load
 from typing import Tuple
 from unittest.mock import patch, MagicMock
 from quipconfig.quipConfigFile import QuipConfigFile
-from quipconfig.quipRemoteExecution import QuipRemoteExecutionException, QuipRemoteHost, quip_remote_exec
+from quipconfig.quipRemoteExecution import QuipRemoteExecutionException, QuipRemoteHost
 
 class TestQuipConfigFile():
     def setup(self):
