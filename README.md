@@ -10,10 +10,9 @@ TODOS:
 - package install should attempt to start the package if it doesn't start automatically
 - on file creation if the directory doesn't exist we should make it
 - redo logging, should be prints not debugs
+- integration test
 
 host object to dos
-- probalbly fix more tests
-- tests for service interface
 - cleanup
 
 # Test Environment

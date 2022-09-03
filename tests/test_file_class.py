@@ -59,7 +59,7 @@ permissions: -rw-r--r--
 
        # captured = capsys.readouterr()
         print(caplog.text)
-        assert "updated file" in caplog.text
+        assert "Updated file" in caplog.text
 
     @patch('paramiko.SSHClient')
     def test_update_with_error(self, mockSshClient):
