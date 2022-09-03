@@ -5,7 +5,7 @@ from yaml import safe_load
 from typing import Tuple
 from unittest.mock import patch, MagicMock
 from quipconfig.quipConfigFile import QuipConfigFile
-from quipconfig.quipRemoteExecution import QuipRemoteExecutionException, quip_remote_exec
+from quipconfig.quipRemoteHost import QuipRemoteExecutionException, QuipRemoteHost
 
 class TestQuipConfigFile():
     def setup(self):
@@ -18,6 +18,7 @@ group: root
 permissions: -rw-r--r--
 """
         self.testFile = safe_load(yaml)
+        self.testHost = QuipRemoteHost("127.0.0.1", 22, "root")
 
     # Provide various working return values for paramiko exec_commands to test methods that need to call multiple remote commands
     def _exec_command_side_effect_happy(self, arg):
@@ -51,27 +52,31 @@ permissions: -rw-r--r--
     @patch('paramiko.SSHClient')
     def test_update_happy_path(self, mockSshClient, caplog):
         mockSshClient.exec_command.side_effect = self._exec_command_side_effect_happy
+        self.testHost.client = mockSshClient
 
         with caplog.at_level(logging.DEBUG):
-            self.testFile.update(mockSshClient)
+            self.testFile.update(self.testHost)
 
        # captured = capsys.readouterr()
         print(caplog.text)
-        assert "updated file" in caplog.text
+        assert "Updated file" in caplog.text
 
     @patch('paramiko.SSHClient')
     def test_update_with_error(self, mockSshClient):
         mockSshClient.exec_command.side_effect = self._exec_command_side_effect_sad
+        self.testHost.client = mockSshClient
+
         with pytest.raises(QuipRemoteExecutionException) as e:
-            self.testFile.update(mockSshClient)
+            self.testFile.update(self.testHost)
 
         assert e.type is QuipRemoteExecutionException
 
     @patch('paramiko.SSHClient')
     def test_needs_update_happy_path_false(self, mockSshClient):
         mockSshClient.exec_command.side_effect = self._exec_command_side_effect_happy
+        self.testHost.client = mockSshClient
         
-        result = self.testFile.needs_update(mockSshClient)
+        result = self.testFile.needs_update(self.testHost)
 
         assert result == False
 
@@ -81,17 +86,19 @@ permissions: -rw-r--r--
         stdout.readline.return_value = '0'
         stderr.readlines.return_value = []
         mockSshClient.exec_command.return_value = (stdin, stdout, stderr)
+        self.testHost.client = mockSshClient
         
-        result = self.testFile.needs_update(mockSshClient)
+        result = self.testFile.needs_update(self.testHost)
 
         assert result == True
 
     @patch('paramiko.SSHClient')
     def test_needs_update_with_error(self, mockSshClient):
         mockSshClient.exec_command.side_effect = self._exec_command_side_effect_sad
+        self.testHost.client = mockSshClient
         
         with pytest.raises(QuipRemoteExecutionException) as e:
-            self.testFile.needs_update(mockSshClient)
+            self.testFile.needs_update(self.testHost)
 
         assert e.type is QuipRemoteExecutionException
 
