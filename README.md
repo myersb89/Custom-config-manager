@@ -12,8 +12,6 @@ TODOS:
 - redo logging, should be prints not debugs
 - integration test
 
-host object to dos
-- cleanup
 
 # Test Environment
 docker build -t test-ssh .

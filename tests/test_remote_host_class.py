@@ -2,7 +2,7 @@ import pytest
 import paramiko
 import logging
 from unittest.mock import patch, MagicMock
-from quipconfig.quipRemoteExecution import QuipRemoteExecutionException, QuipRemoteHost
+from quipconfig.quipRemoteHost import QuipRemoteExecutionException, QuipRemoteHost
 
 class TestQuipRemoteHost():
     def setup(self):

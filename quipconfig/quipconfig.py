@@ -6,7 +6,7 @@ import paramiko
 import getpass
 from .quipConfigFile import QuipConfigFile
 from .quipConfigPackage import QuipConfigPackage
-from .quipRemoteExecution import QuipRemoteExecutionException, QuipRemoteHost
+from .quipRemoteHost import QuipRemoteExecutionException, QuipRemoteHost
 from typing import Tuple
 
 def main():
