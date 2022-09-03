@@ -1,5 +1,6 @@
 import paramiko
 import getpass
+import logging
 
 class QuipRemoteExecutionException(Exception):
     pass
@@ -32,16 +33,15 @@ class QuipRemoteHost():
             raise QuipRemoteExecutionException(f"Error executing remote command: {errors}")
         return stdout
 
-def quip_remote_exec(client:paramiko.SSHClient, cmd: str) -> str:  
-    stdin, stdout, stderr = client.exec_command(cmd)
-    errors = stderr.readlines()
+    def service_interface(self, service: str, cmd: str):
+        try:
+            logging.debug(f"{self.log_prefix} {''.join(cmd + 'p').capitalize() if cmd == 'stop' else cmd.capitalize()}ing {service} ...")
+            out = self.remote_exec(f"systemctl {cmd} {service}").readline().strip('\n')
+        except QuipRemoteExecutionException as e:
+            if "System has not been booted with systemd" in str(e):
+                logging.debug(f"{self.log_prefix} Systemd not configured on remote host, falling back to /etc/init.d script ...")
+                out = self.remote_exec(f"/etc/init.d/{service} {cmd}")
+            else:
+                raise
+        logging.debug(f"{self.log_prefix} {''.join(cmd + 'p').capitalize() if cmd == 'stop' else cmd.capitalize()}ed {service}")
 
-    # Ignore non-fatal errors
-    ignore = ["debconf: delaying package configuration, since apt-utils is not installed"]
-    for e in errors:
-        if e.strip('\n') in ignore:
-            errors.remove(e)
-
-    if errors != []:
-        raise QuipRemoteExecutionException(f"Error executing remote command: {errors}")
-    return stdout
