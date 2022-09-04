@@ -1,6 +1,7 @@
 import yaml
 import paramiko
 import logging
+import os
 from typing import Tuple
 from .quipRemoteHost import QuipRemoteExecutionException, QuipRemoteHost
 
@@ -58,6 +59,11 @@ class QuipConfigFile(yaml.YAMLObject):
     def update(self, client: QuipRemoteHost):
         # Create/Update file, owner, group, permissions
         print(f"{client.log_prefix} Updating {self.path}")
+
+        dir = os.path.split(self.path)[0]
+        if dir != "":
+            out = client.remote_exec(f"mkdir -p {dir}")
+
         out = client.remote_exec(f"""cat << 'EOF' > {self.path}
 {self.content}
 EOF""") 

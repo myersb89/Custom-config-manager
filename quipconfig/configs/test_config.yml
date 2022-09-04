@@ -17,7 +17,7 @@ files:
   content: 
     |
     this is a config
-  path: nginx.conf
+  path: /root/this/does/not/exist/nginx.conf
   owner: root
   group: root
   permissions: -rw-r--r--

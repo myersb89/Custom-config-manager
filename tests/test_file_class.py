@@ -36,6 +36,9 @@ permissions: -rw-r--r--
         elif cmd == "cat":
             stderr.readlines.return_value = []
             stdout.readlines.return_value = ["this is a config"]
+        elif cmd == "mkdir":
+            stderr.readlines.return_value = []
+            stdout.readlines.return_value = []
 
         return stdin, stdout, stderr
 

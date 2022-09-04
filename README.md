@@ -6,7 +6,6 @@ TODOS:
 - allow for latest version of package
 - str/print reprs for objects
 - parallelization per host 
-- on file creation if the directory doesn't exist we should make it
 - integration test
 - type hint consistency
 
