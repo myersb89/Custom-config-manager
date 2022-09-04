@@ -4,13 +4,13 @@ packages:
   name: nginx
   version: '1.14.0-0ubuntu1.10'
   action: install
-  restart: []
+  restart: [nginx]
 - 
   !Package
   name: php-fpm
   version: '1:7.2+60ubuntu1'
   action: install
-  restart: [nginx]
+  restart: [php7.2-fpm, nginx]
 files:
 -
   !File

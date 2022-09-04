@@ -58,7 +58,11 @@ def main():
             to_restart.update(f.restart)
 
     for service in to_restart:
-        client.service_interface(service, 'restart')  
+        status = client.service_interface(service, 'status')
+        if "is not running" in status:
+            client.service_interface(service, 'start')
+        else:
+            client.service_interface(service, 'restart')
 
 def read_role_config(role: str) -> dict:
     path = pathlib.Path((pathlib.Path(__file__).resolve().parent).joinpath(f"configs\{role}_config.yml"))

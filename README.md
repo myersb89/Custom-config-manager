@@ -6,8 +6,6 @@ TODOS:
 - allow for latest version of package
 - str/print reprs for objects
 - parallelization per host 
-- should really make a host object so I can do some init
-- package install should attempt to start the package if it doesn't start automatically
 - on file creation if the directory doesn't exist we should make it
 - redo logging, should be prints not debugs
 - integration test

@@ -30,6 +30,7 @@ class QuipConfigPackage(yaml.YAMLObject):
     def install(self, client: QuipRemoteHost):
         logging.debug(f"{client.log_prefix} Installing {self.name} ...") 
         out = client.remote_exec(f"DEBIAN_FRONTEND=noninteractive apt-get install -y {self.name}={self.version}").readline().strip('\n')
+        
         logging.debug(f"{client.log_prefix} Installed {self.name} ...")
 
     def uninstall(self, client: QuipRemoteHost):

@@ -44,7 +44,7 @@ class TestQuipRemoteHost():
         with caplog.at_level(logging.DEBUG):
             self.testHost.service_interface('nginx', 'restart')
 
-        assert "Restarted" in caplog.text
+        assert "Restarting" in caplog.text
 
     @patch('paramiko.SSHClient')
     def test_service_stop_happy(self, mockSshClient, caplog):
@@ -57,7 +57,7 @@ class TestQuipRemoteHost():
         with caplog.at_level(logging.DEBUG):
             self.testHost.service_interface('nginx', 'stop')
 
-        assert "Stopped" in caplog.text
+        assert "Stopping" in caplog.text
 
     @patch('paramiko.SSHClient')
     def test_service_restart_no_systemd(self, mockSshClient, caplog):
