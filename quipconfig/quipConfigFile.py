@@ -17,6 +17,10 @@ class QuipConfigFile(yaml.YAMLObject):
         self.permissions = permissions
         self.restart = restart
 
+    def __repr__(self):
+        return f"{self.__class__.__name__} {self.permissions} {self.owner} {self.group} {self.path} \n {self.content}"
+
+
     def _parse_ls(self, output: str) -> Tuple[str,str,str]:
         fields = output.split()
         permissions = fields[0]

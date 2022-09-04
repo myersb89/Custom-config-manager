@@ -14,6 +14,9 @@ class QuipConfigPackage(yaml.YAMLObject):
         self.action = action
         self.restart = restart
 
+    def __repr__(self):
+        return f"{self.__class__.__name__} {self.name} {self.version}"
+
     def is_installed(self, client: QuipRemoteHost) -> bool:
         print(f"{client.log_prefix} Checking {self.name} ...") 
         out = client.remote_exec(f"dpkg-query -W | grep {self.name}").readlines()

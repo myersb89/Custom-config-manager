@@ -32,8 +32,9 @@ def main():
     data = read_role_config(role)
     files, packages = parse_role_config(data)
 
-    #logging.debug(files)
-    #logging.debug(packages)
+    logging.debug(f"Parsed out the following files and packages from {role} config")
+    logging.debug(files)
+    logging.debug(packages)
 
     # Connect to the host
     hostip = "127.0.0.1"

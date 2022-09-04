@@ -16,6 +16,9 @@ class QuipRemoteHost():
         self.port = port
         self.log_prefix = f"{self.host}:{self.port}: "
 
+    def __repr__(self):
+        return f"{self.__class__.__name__} {self.host} {self.port}"
+
     def connect(self):
         self.client.connect(self.host, port=self.port, username=self.user, password=getpass.getpass(prompt=f"Input password for host {self.host}: "))
 

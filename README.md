@@ -4,11 +4,10 @@ TODOS:
     - bonus, add a wizard?
 - invalid config file exception
 - allow for latest version of package
-- str/print reprs for objects
 - parallelization per host 
 - integration test
 - type hint consistency
-
+- update log prefix with string repr
 
 # Test Environment
 docker build -t test-ssh .
