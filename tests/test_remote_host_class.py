@@ -34,30 +34,30 @@ class TestQuipRemoteHost():
         assert e.type is QuipRemoteExecutionException
 
     @patch('paramiko.SSHClient')
-    def test_service_restart_happy(self, mockSshClient, caplog):
+    def test_service_restart_happy(self, mockSshClient, capsys):
         stdin, stdout, stderr = MagicMock(), MagicMock(), MagicMock()
         stdout.readlines.return_value = ["Restarting nginx"]
         stderr.readlines.return_value = []
         mockSshClient.exec_command.return_value = (stdin, stdout, stderr)
         self.testHost.client = mockSshClient
 
-        with caplog.at_level(logging.DEBUG):
-            self.testHost.service_interface('nginx', 'restart')
+        self.testHost.service_interface('nginx', 'restart')
+        captured = capsys.readouterr()
 
-        assert "Restarting" in caplog.text
+        assert "Restarting" in captured.out
 
     @patch('paramiko.SSHClient')
-    def test_service_stop_happy(self, mockSshClient, caplog):
+    def test_service_stop_happy(self, mockSshClient, capsys):
         stdin, stdout, stderr = MagicMock(), MagicMock(), MagicMock()
         stdout.readlines.return_value = ["Stopping nginx"]
         stderr.readlines.return_value = []
         mockSshClient.exec_command.return_value = (stdin, stdout, stderr)
         self.testHost.client = mockSshClient
 
-        with caplog.at_level(logging.DEBUG):
-            self.testHost.service_interface('nginx', 'stop')
+        self.testHost.service_interface('nginx', 'stop')
+        captured = capsys.readouterr()
 
-        assert "Stopping" in caplog.text
+        assert "Stopping" in captured.out
 
     @patch('paramiko.SSHClient')
     def test_service_restart_no_systemd(self, mockSshClient, caplog):

@@ -50,16 +50,14 @@ permissions: -rw-r--r--
         return stdin, stdout, stderr
 
     @patch('paramiko.SSHClient')
-    def test_update_happy_path(self, mockSshClient, caplog):
+    def test_update_happy_path(self, mockSshClient, capsys):
         mockSshClient.exec_command.side_effect = self._exec_command_side_effect_happy
         self.testHost.client = mockSshClient
 
-        with caplog.at_level(logging.DEBUG):
-            self.testFile.update(self.testHost)
+        self.testFile.update(self.testHost)
+        captured = capsys.readouterr()
 
-       # captured = capsys.readouterr()
-        print(caplog.text)
-        assert "Updated file" in caplog.text
+        assert "Updated file" in captured.out
 
     @patch('paramiko.SSHClient')
     def test_update_with_error(self, mockSshClient):

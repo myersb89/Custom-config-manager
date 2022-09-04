@@ -74,7 +74,7 @@ action: uninstall
         assert result == False
     
     @patch('paramiko.SSHClient')
-    def test_install(self, mockSshClient, caplog):
+    def test_install(self, mockSshClient, capsys):
         stdin, stdout, stderr = MagicMock(), MagicMock(), MagicMock()
         stdout.readlines.return_value = ["Preparing to unpack .../nginx_1.14.0-0ubuntu1.10_all.deb ...\n", 
                                          "Unpacking nginx (1.14.0-0ubuntu1.10) ... \n",
@@ -83,19 +83,19 @@ action: uninstall
         mockSshClient.exec_command.return_value = (stdin, stdout, stderr)
         self.testHost.client = mockSshClient
         
-        with caplog.at_level(logging.DEBUG):
-            self.testPackage.install(self.testHost)
+        self.testPackage.install(self.testHost)
+        captured = capsys.readouterr()
 
-        assert "Installed" in caplog.text
+        assert "Installed" in captured.out
 
     @patch('paramiko.SSHClient')
-    def test_uninstall(self, mockSshClient, caplog):
+    def test_uninstall(self, mockSshClient, capsys):
         stdin, stdout, stderr = MagicMock(), MagicMock(), MagicMock()
         stdout.readlines.return_value = ["Removing nginx (1.14.0-0ubuntu1.10) ..."]
         stderr.readlines.return_value = []
         mockSshClient.exec_command.return_value = (stdin, stdout, stderr)
         
-        with caplog.at_level(logging.DEBUG):
-            self.testPackage.uninstall(mockSshClient)
+        self.testPackage.uninstall(mockSshClient)
+        captured = capsys.readouterr()
 
-        assert "Uninstalled" in caplog.text
+        assert "Uninstalled" in captured.out

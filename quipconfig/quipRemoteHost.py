@@ -36,9 +36,9 @@ class QuipRemoteHost():
     def service_interface(self, service: str, cmd: str) -> str:
         try:
             if cmd == 'status':
-                logging.debug(f"{self.log_prefix} Checking status of {service} ...")
+                print(f"{self.log_prefix} Checking status of {service} ...")
             else:
-                logging.debug(f"{self.log_prefix} {''.join(cmd + 'p').capitalize() if cmd == 'stop' else cmd.capitalize()}ing {service} ...")
+                print(f"{self.log_prefix} {''.join(cmd + 'p').capitalize() if cmd == 'stop' else cmd.capitalize()}ing {service} ...")
             out = self.remote_exec(f"systemctl {cmd} {service}").readline().strip('\n')
         except QuipRemoteExecutionException as e:
             if "System has not been booted with systemd" in str(e):
@@ -46,6 +46,6 @@ class QuipRemoteHost():
                 out = self.remote_exec(f"/etc/init.d/{service} {cmd}").readline().strip('\n')
             else:
                 raise
-        logging.debug(f"{self.log_prefix} {out}")
+        print(f"{self.log_prefix} {out}")
         return out
 
