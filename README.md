@@ -7,8 +7,8 @@ TODOS:
 - str/print reprs for objects
 - parallelization per host 
 - on file creation if the directory doesn't exist we should make it
-- redo logging, should be prints not debugs
 - integration test
+- type hint consistency
 
 
 # Test Environment
