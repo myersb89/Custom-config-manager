@@ -18,27 +18,27 @@ class QuipConfigPackage(yaml.YAMLObject):
         return f"{self.__class__.__name__} {self.name} {self.version}"
 
     def is_installed(self, client: QuipRemoteHost) -> bool:
-        print(f"{client.log_prefix} Checking {self.name} ...") 
+        print(f"{client} Checking {self.name} ...") 
         out = client.remote_exec(f"dpkg-query -W | grep {self.name}").readlines()
-        logging.debug(f"{client.log_prefix} Installed packages for {self.name}\n {out}")
+        logging.debug(f"{client} Installed packages for {self.name}\n {out}")
 
         # Packages can have similar names. Grep narrows it down but need to check for exact match
         for pkg in out:
             pkg = pkg.strip('\n')
             if pkg.split('\t')[0] == self.name and pkg.split('\t')[1] == self.version:
-                print(f"{client.log_prefix} {self.name} {self.version} is installed")
+                print(f"{client} {self.name} {self.version} is installed")
                 return True
-        print(f"{client.log_prefix} {self.name} {self.version} is not installed")
+        print(f"{client} {self.name} {self.version} is not installed")
         return False
     
     def install(self, client: QuipRemoteHost):
-        print(f"{client.log_prefix} Installing {self.name} ...") 
+        print(f"{client} Installing {self.name} ...") 
         out = client.remote_exec(f"DEBIAN_FRONTEND=noninteractive apt-get install -y {self.name}={self.version}").readline().strip('\n')
         
-        print(f"{client.log_prefix} Installed {self.name} ...")
+        print(f"{client} Installed {self.name} ...")
 
     def uninstall(self, client: QuipRemoteHost):
-        print(f"{client.log_prefix} Uninstalling {self.name} ...") 
+        print(f"{client} Uninstalling {self.name} ...") 
         out = client.remote_exec(f"DEBIAN_FRONTEND=noninteractive apt-get remove -y {self.name}={self.version}").readline().strip('\n')
-        print(f"{client.log_prefix} Uninstalled {self.name} ...")
+        print(f"{client} Uninstalled {self.name} ...")
 

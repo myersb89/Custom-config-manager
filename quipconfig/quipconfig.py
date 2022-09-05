@@ -39,7 +39,7 @@ def main():
     # Connect to the host
     hostip = "127.0.0.1"
     client = QuipRemoteHost(hostip, 2222, "root")
-    print(f"Connecting to host {hostip}...")
+    print(f"Connecting to host {client}...")
     client.connect()
 
     # Main logic loop: Apply the configuration idempotently
