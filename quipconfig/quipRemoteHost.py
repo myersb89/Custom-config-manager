@@ -7,12 +7,14 @@ class QuipRemoteExecutionException(Exception):
 
 class QuipRemoteHost():
 
-    def __init__(self, host: str, port: int, user: str):
+    def __init__(self, host: str, port: int, user: str, password: str
+    ):
         self.client = paramiko.SSHClient()
         self.client.load_system_host_keys()
         self.client.set_missing_host_key_policy(paramiko.client.WarningPolicy)
         self.host = host
         self.user = user
+        self.password = password
         self.port = port
         self = f"{self.host}:{self.port}: "
 
@@ -23,7 +25,10 @@ class QuipRemoteHost():
         return f"{self.host}:{self.port}"
 
     def connect(self):
-        self.client.connect(self.host, port=self.port, username=self.user, password=getpass.getpass(prompt=f"Input password for host {self.host}: "))
+        self.client.connect(self.host, port=self.port, username=self.user, password=self.password)
+
+    def close(self):
+        self.client.close()
 
     def remote_exec(self, cmd: str) -> str:  
         stdin, stdout, stderr = self.client.exec_command(cmd)

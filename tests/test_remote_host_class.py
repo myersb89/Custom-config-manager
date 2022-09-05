@@ -6,7 +6,7 @@ from quipconfig.quipRemoteHost import QuipRemoteExecutionException, QuipRemoteHo
 
 class TestQuipRemoteHost():
     def setup(self):
-        self.testHost = QuipRemoteHost("127.0.0.1", 22, "root")
+        self.testHost = QuipRemoteHost("127.0.0.1", 22, "root", "testpwd")
 
     @patch('paramiko.SSHClient')
     def test_remote_exec_ignore(self, mockSshClient):

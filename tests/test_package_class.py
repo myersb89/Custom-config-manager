@@ -23,7 +23,7 @@ action: uninstall
 """
         self.testPackage = safe_load(yaml)
         self.testPackageUninstall = safe_load(yaml)
-        self.testHost = QuipRemoteHost("127.0.0.1", 22, "root")
+        self.testHost = QuipRemoteHost("127.0.0.1", 22, "root", "testpwd")
 
     @patch('paramiko.SSHClient')
     def test_is_installed_true(self, mockSshClient):

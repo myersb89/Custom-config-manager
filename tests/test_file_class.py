@@ -18,7 +18,7 @@ group: root
 permissions: -rw-r--r--
 """
         self.testFile = safe_load(yaml)
-        self.testHost = QuipRemoteHost("127.0.0.1", 22, "root")
+        self.testHost = QuipRemoteHost("127.0.0.1", 22, "root", "testpwd")
 
     # Provide various working return values for paramiko exec_commands to test methods that need to call multiple remote commands
     def _exec_command_side_effect_happy(self, arg):

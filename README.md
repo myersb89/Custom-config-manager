@@ -7,7 +7,7 @@ TODOS:
 - parallelization per host 
 - integration test
 - type hint consistency
-- update log prefix with string repr
+- input validation
 
 # Test Environment
 docker build -t test-ssh .
