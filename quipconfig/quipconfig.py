@@ -7,6 +7,7 @@ import getpass
 from .quipConfigFile import QuipConfigFile
 from .quipConfigPackage import QuipConfigPackage
 from .quipRemoteHost import QuipRemoteExecutionException, QuipRemoteHost
+from .quipRoleConfig import read_role_config, parse_role_config
 from typing import Tuple
 
 def main():
@@ -31,6 +32,7 @@ def main():
     print(f"Configuring server of type: {role}")
 
     # Read and Parse the Configuration
+    import pdb; pdb.set_trace()
     data = read_role_config(role)
     files, packages = parse_role_config(data)
 
@@ -71,21 +73,6 @@ def main():
                 client.service_interface(service, 'restart')
 
         client.close()
-
-def read_role_config(role: str) -> dict:
-    path = pathlib.Path((pathlib.Path(__file__).resolve().parent).joinpath(f"configs\{role}_config.yml"))
-    try:
-        with open(path, 'r') as config_file:
-            return yaml.safe_load(config_file)
-    except FileNotFoundError:
-        logging.error(f"Could not locate configuration for role: {role}. Please create the configuration file.")
-        raise
-    except yaml.YAMLError:
-        logging.error(f"Invalid yaml syntax for role config: {role}.")
-        raise
-
-def parse_role_config(config_data: str) -> Tuple[list[QuipConfigFile], list[QuipConfigPackage]]:
-    return config_data.get("files"), config_data.get("packages")
 
 def parse_host(host:str) -> [Tuple[str, str]]:
     # Better input validation goes here

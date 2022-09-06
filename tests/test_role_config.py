@@ -1,7 +1,7 @@
 import pytest
 from yaml.scanner import ScannerError
 from unittest.mock import patch, mock_open
-from quipconfig.quipconfig import *
+from quipconfig.quipRoleConfig import *
 
 def test_read_config_happy_path():
     data = read_role_config("web")
