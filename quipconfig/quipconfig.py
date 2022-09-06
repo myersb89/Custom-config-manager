@@ -9,6 +9,7 @@ from .quipConfigPackage import QuipConfigPackage
 from .quipRemoteHost import QuipRemoteExecutionException, QuipRemoteHost
 from .quipRoleConfig import read_role_config, parse_role_config
 from typing import Tuple
+from multiprocessing import Pool
 
 def main():
     parser = argparse.ArgumentParser()
@@ -32,7 +33,6 @@ def main():
     print(f"Configuring server of type: {role}")
 
     # Read and Parse the Configuration
-    import pdb; pdb.set_trace()
     data = read_role_config(role)
     files, packages = parse_role_config(data)
 
@@ -42,37 +42,41 @@ def main():
 
     password = getpass.getpass(prompt=f"Input root password for hosts: ")
 
-    # Connect to the host
-    for host in hosts:
-        hostip, port = parse_host(host)
-        client = QuipRemoteHost(hostip, port, "root", password)
-        print(f"Connecting to host {client}...")
-        client.connect()
+    # Configure up to 4 hosts in parallel
+    with Pool(4) as p:
+        p.starmap(configure, [[host, password, files, packages] for host in hosts])
 
-        # Main logic loop: Apply the configuration idempotently
-        to_restart = set()
-        for p in packages:
-            installed = p.is_installed(client)
-            if not installed and p.action == "install":
-                p.install(client)
-                to_restart.update(p.restart)
-            elif installed and p.action == "uninstall":
-                p.uninstall(client)
-                to_restart.update(p.restart)
 
-        for f in files:
-            if f.needs_update(client):
-                f.update(client)
-                to_restart.update(f.restart)
+def configure(host:str, password: str, files: list[QuipConfigFile], packages: list[QuipConfigPackage]):
+    hostip, port = parse_host(host)
+    client = QuipRemoteHost(hostip, port, "root", password)
+    print(f"Connecting to host {client}...")
+    client.connect()
 
-        for service in to_restart:
-            status = client.service_interface(service, 'status')
-            if "is not running" in status:
-                client.service_interface(service, 'start')
-            else:
-                client.service_interface(service, 'restart')
+    # Main logic loop: Apply the configuration idempotently
+    to_restart = set()
+    for p in packages:
+        installed = p.is_installed(client)
+        if not installed and p.action == "install":
+            p.install(client)
+            to_restart.update(p.restart)
+        elif installed and p.action == "uninstall":
+            p.uninstall(client)
+            to_restart.update(p.restart)
 
-        client.close()
+    for f in files:
+        if f.needs_update(client):
+            f.update(client)
+            to_restart.update(f.restart)
+
+    for service in to_restart:
+        status = client.service_interface(service, 'status')
+        if "is not running" in status:
+            client.service_interface(service, 'start')
+        else:
+            client.service_interface(service, 'restart')
+
+    client.close()
 
 def parse_host(host:str) -> [Tuple[str, str]]:
     # Better input validation goes here
