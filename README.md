@@ -7,7 +7,7 @@ This tool is designed to be run from any location with Python installed that has
 The tool also uses the Python multiprocessing library to create a pool of worker processes. The configuration for each target host is submitted as a job to the worker process pool. This gives us a few benefits
 1. Configuration for multiple hosts can run in parallel
 2. The tool can scale up by running from a machine with more CPU cores and increasing the number of workers in the pool
-3. An exception encountered while configuring a host does cause the whole tool to crash and all configuration to fail; it is isolated to the worker process that ran into the exception 
+3. An exception encountered while configuring a host does not cause the whole tool to crash and all configuration to fail; it is isolated to the worker process that ran into the exception 
 
 # Configuration
 The configuration files for the tool are written in YAML and consist of a key for `packages` with a value of a list of package objects to install/remove and a key for `files` with a value of a list of file objects to create/override on the target server. See below for package and file object specifications.
@@ -69,9 +69,11 @@ quipconfig --help
 ```
 
 # Invoke
-Once installed the tool can be invoked with `quipconfig <role> <host>` where
-* role corresponds to the role name of the configuration file for the role configuration to apply to the hosts e.g. `web` for `web_config.yml`
-* host is the IP address of the target server. It can either be specified as `x.x.x.x` which defaults to ssh over port 22 or you can override the port with `x.x.x.x:<port>` e.g. `127.0.0.1:2222`
+Once installed the tool can be invoked with `quipconfig <role> <host> ... <host>` where
+* role - must be the first argument and corresponds to the role name of the configuration file for the role configuration to apply to the hosts e.g. `web` for `web_config.yml`
+* host - quipconfig accepts any number of host arguments where each host is the IP address of the target server. It can either be specified as `x.x.x.x` which defaults to ssh over port 22 or you can override the port with `x.x.x.x:<port>` e.g. `127.0.0.1:2222`
+
+See `quipconfig --help` for full usage
 
 # Test Environment
 docker build -t test-ssh .
