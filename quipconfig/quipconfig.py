@@ -47,7 +47,7 @@ def main():
         p.starmap(configure, [[host, password, files, packages] for host in hosts])
 
 
-def configure(host:str, password: str, files: list[QuipConfigFile], packages: list[QuipConfigPackage]):
+def configure(host: str, password: str, files: list[QuipConfigFile], packages: list[QuipConfigPackage]):
     hostip, port = parse_host(host)
     client = QuipRemoteHost(hostip, port, "root", password)
     print(f"Connecting to host {client}...")
@@ -78,11 +78,11 @@ def configure(host:str, password: str, files: list[QuipConfigFile], packages: li
 
     client.close()
 
-def parse_host(host:str) -> [Tuple[str, str]]:
+def parse_host(hoststr: str) -> Tuple[str, int]:
     # Better input validation goes here
-    host = host.split(":")
+    host = hoststr.split(":")
     port = 22
     if len(host) > 1:
-        port = host[1]
+        port = int(host[1])
 
     return host[0], port

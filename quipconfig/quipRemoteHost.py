@@ -16,7 +16,6 @@ class QuipRemoteHost():
         self.user = user
         self.password = password
         self.port = port
-        self = f"{self.host}:{self.port}: "
 
     def __repr__(self):
         return f"{self.__class__.__name__} {self.host} {self.port}"
@@ -30,7 +29,7 @@ class QuipRemoteHost():
     def close(self):
         self.client.close()
 
-    def remote_exec(self, cmd: str) -> str:  
+    def remote_exec(self, cmd: str) -> paramiko.channel.ChannelFile:  
         stdin, stdout, stderr = self.client.exec_command(cmd)
         errors = stderr.readlines()
 
@@ -42,6 +41,7 @@ class QuipRemoteHost():
 
         if errors != []:
             raise QuipRemoteExecutionException(f"Error executing remote command: {errors}")
+
         return stdout
 
     def service_interface(self, service: str, cmd: str) -> str:

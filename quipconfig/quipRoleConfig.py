@@ -20,9 +20,9 @@ def read_role_config(role: str) -> dict:
         logging.error(f"Invalid yaml syntax for role config: {role}.")
         raise
 
-def parse_role_config(config_data: str) -> Tuple[list[QuipConfigFile], list[QuipConfigPackage]]:
-    files = config_data.get("files")
-    packages = config_data.get("packages")
+def parse_role_config(config_data: dict) -> Tuple[list[QuipConfigFile], list[QuipConfigPackage]]:
+    files = config_data.get("files", [])
+    packages = config_data.get("packages", [])
 
     for f in files:
         for required_attribute in ["path", "content", "owner", "group", "permissions", "restart"]:
