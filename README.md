@@ -103,6 +103,5 @@ mypy quipconfig
 
 # TODOS
 - integration test
-- type hint consistency
-- input validation
+- input validation/more robust error handling
 - wizard for configuration
